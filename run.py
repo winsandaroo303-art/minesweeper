@@ -260,14 +260,21 @@ implement
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     self.reset()
+feature/issue-3-hint
+
  feature/issue-4-best-time
 
+ implement
                 elif event.key == pygame.K_1:
                     self.selected_difficulty = "easy"
                     self.reset()
 
                 elif event.key == pygame.K_2:
                     self.selected_difficulty = "normal"
+ feature/issue-3-hint
+                    self.reset()
+
+
                
                 elif event.key == pygame.K_1:
                     self.selected_difficulty = "easy"
@@ -278,9 +285,14 @@ implement
                     self.reset()
         
  implement
+implement
                 elif event.key == pygame.K_3:
                     self.selected_difficulty = "hard"
                     self.reset()
+
+ feature/issue-3-hint
+                elif event.key == pygame.K_h:
+                    print("힌트 요청")
 
  feature/issue-4-best-time
                 elif event.key == pygame.K_h:
@@ -289,6 +301,7 @@ implement
 
 
 implement
+ implement
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.input.handle_mouse(event.pos, event.button)
 
@@ -335,6 +348,25 @@ implement
     def _save_best_time(self, ms: int) -> None:
         with open(self.best_time_path, "w") as f:
             f.write(str(ms))
+
+    def give_hint(self):
+        """Highlight one safe unrevealed cell as a hint."""
+        if self.board.game_over or self.board.win:
+            return
+    
+        candidates = [
+            (cell.col, cell.row)
+            for cell in self.board.cells
+            if not cell.state.is_revealed and not cell.state.is_mine
+        ]
+    
+        if not candidates:
+            return
+    
+        col, row = random.choice(candidates)
+        self.highlight_targets = {(col, row)}
+        self.highlight_until_ms = pygame.time.get_ticks() + config.highlight_duration_ms
+
 
 
 def main() -> int:
